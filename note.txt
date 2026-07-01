@@ -1,0 +1,92 @@
+ - intall express 
+ - route 
+ - star service app.js 
+ - 
+ req.query
+ req.param , 
+ req.body , 
+   
+
+
+ // review 
+    Route 
+        |
+        --> middleware
+                |-->
+                     Controller 
+
+    Homework 
+    1- Design route , Controller relate Product
+    2- Get , Create , Update , Delete product (use array )
+
+
+    REST API 
+    SOAP 
+    GrapQL
+ 
+
+
+ Homework : 
+    - Select * product 
+    - Insert into product
+    - Update product
+    - Delete product
+
+ Homework : 
+ 1 - Create New Route for employee
+ 2- Crate New Controller For employee
+    - Select * employee 
+    - Insert into employee
+    - Update employee
+    - Delete employee
+
+
+    write file , create file , append file 
+Homework : 
+   1- Create Form Input data Input
+   2- Update , Delete and Display all of to table 
+   Note** HTML CSS JavaSctipt
+
+
+    var authorization = req.headers.authorization; // token from client
+    "Bearer fjsdflsdfjslkduroewrfsjkdfsdfdsjfsdlfjds"
+    ["Bearer" , "kfjdsklfjdslkfj0954309589034584390543"]
+
+    Homework
+    1-Login Page
+    2-store token in LocalStorage
+    3-Direct to User Page 
+    4-vildate token to show data
+
+   node-shcedule
+   
+
+   Step by Step 
+   1- create bot telgram 
+         - token :8885943257:AAEiQB_REf7yb15bEGQRtU-aiZhkpBjZAmg
+         - access chatID , groupID  : -1003924130263
+   2- intall : npm i node-telegram-bot-api
+   3- send message 
+
+   step to send Gmail 
+   I.Gmail Configure
+      1-Enable 2-Step Verification on your Google account.
+      2- Go to Google App Passwords.
+      3-Create a new App Password.
+      4-Copy the generated password.
+         final password : c s i b z p g e p k x l k w g f
+   II. install plug in nodemailer
+   III. ...
+
+
+
+   - send otp to Gmail
+   - Verification code 
+   - reset-password
+
+
+   Homework 
+      - create api product and Display on frontend 
+      - add cart and summary item 
+      - process payment with Visa Card 
+      

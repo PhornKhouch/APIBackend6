@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KHQR Payment Tester</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <div class="brand">
+                <span class="khqr-badge">KHQR</span>
+                <h1>Payment Tester</h1>
+            </div>
+            <div class="api-config">
+                <label for="apiBase">API Base URL</label>
+                <input id="apiBase" type="text" value="http://localhost:3000" spellcheck="false" />
+            </div>
+        </header>
+
+        <main class="grid">
+            <!-- ── Left: Payment form ── -->
+            <section class="card">
+                <h2>1. Create Payment</h2>
+                <form id="genForm">
+                    <div class="field">
+                        <label for="amount">Amount</label>
+                        <input id="amount" type="number" min="0.01" step="0.01" value="1.00" required />
+                    </div>
+                    <div class="field">
+                        <label for="currency">Currency</label>
+                        <select id="currency">
+                            <option value="USD">USD</option>
+                            <option value="KHR">KHR</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="billNumber">Bill Number <span class="muted">(optional)</span></label>
+                        <input id="billNumber" type="text" placeholder="INV-0001" />
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="genBtn">
+                        Generate KHQR
+                    </button>
+                </form>
+            </section>
+
+            <!-- ── Middle: QR display ── -->
+            <section class="card qr-card">
+                <h2>2. Scan to Pay</h2>
+                <div id="qrWrap" class="qr-wrap empty">
+                    <div id="qrcode" class="qrcode"></div>
+                    <p id="qrPlaceholder" class="placeholder">QR code appears here after generating.</p>
+
+                    <div id="paidOverlay" class="paid-overlay hidden">
+                        <div class="check-circle">✓</div>
+                        <p>Payment Received</p>
+                    </div>
+                </div>
+
+                <div id="qrMeta" class="qr-meta hidden">
+                    <div class="meta-row"><span>Amount</span><b id="metaAmount">-</b></div>
+                    <div class="meta-row"><span>Merchant</span><b id="metaMerchant">-</b></div>
+                    <div class="meta-row"><span>MD5</span><code id="metaMd5" class="mono">-</code></div>
+                </div>
+            </section>
+
+            <!-- ── Right: Status & logs ── -->
+            <section class="card">
+                <h2>3. Payment Status</h2>
+                <div id="statusBox" class="status-box idle">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Idle — generate a QR to begin.</span>
+                </div>
+
+                <div class="poll-controls">
+                    <button id="startPollBtn" class="btn btn-secondary" disabled>Start Auto-Check</button>
+                    <button id="stopPollBtn" class="btn btn-ghost" disabled>Stop</button>
+                    <button id="checkOnceBtn" class="btn btn-ghost" disabled>Check Once</button>
+                </div>
+
+                <div class="verify-block">
+                    <div class="meta-row">
+                        <span>QR Valid?</span>
+                        <b id="verifyResult" class="muted">Not checked</b>
+                    </div>
+                </div>
+
+                <h3>Activity Log</h3>
+                <div id="log" class="log"></div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>
+                Flow: <b>Generate</b> → auto <b>Verify</b> the QR string →
+                poll <b>check-payment</b> (by MD5) until Bakong reports the transaction complete.
+                Auto-check requires <code>BAKONG_API_ENABLED=true</code> on the server.
+            </p>
+        </footer>
+    </div>
+
+    <!-- QR rendering library (renders the EMV KHQR string into a scannable QR image) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
