@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-  "backend6",
+  "backend6_project",
   "root",
   "",
   {

@@ -1,11 +1,17 @@
-function teacherRoute(app) {
-    app.get('/api/v1/teacher', (req, res) => {
-        res.send("Hello Teacher");
-    });
+const {
+    getAllTeachers,
+    getOneTeacher,
+    createTeacher,
+    updateTeacher,
+    deleteTeacher,
+} = require('../controller/teacherController');
 
-    app.get('/api/v1/teacher/create', (req, res) => {
-        res.send("Hello create Teacher");
-    });
+function teacherRoute(app) {
+    app.get('/api/v1/teacher', getAllTeachers);
+    app.get('/api/v1/teacher/:id', getOneTeacher);
+    app.post('/api/v1/teacher', createTeacher);
+    app.put('/api/v1/teacher/:id', updateTeacher);
+    app.delete('/api/v1/teacher/:id', deleteTeacher);
 }
 
 // export default teacherRoute;

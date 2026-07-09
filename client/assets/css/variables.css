@@ -1,0 +1,21 @@
+:root {
+  --bg: #0f1729;
+  --card: #1a2332;
+  --card-2: #1f2a3d;
+  --border: #2a3548;
+  --text: #f3f5f9;
+  --muted: #8b96ab;
+  --muted-2: #6b7688;
+
+  --orange: #f59e0b;
+  --orange-dim: rgba(245, 158, 11, 0.15);
+
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --teal: #2dd4bf;
+  --purple: #a78bfa;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+}

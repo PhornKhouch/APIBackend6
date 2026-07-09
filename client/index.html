@@ -1,251 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ancora · School SMS</title>
+<link rel="stylesheet" href="assets/css/variables.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
 
-    <div class="container">
-        <div class="form-header">
-            <h2>User Management</h2>
-            <p>Fill in the details below to add a new user</p>
-        </div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="userId">UserID</label>
-                <input type="text" id="userId" placeholder="Enter user ID">
-            </div>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter username">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter password">
-            </div>
-            <div class="form-group">
-                <label for="remark">Remark</label>
-                <input type="text" id="remark" placeholder="Enter remark">
-            </div>
-        </div>
-        <div class="form-footer">
-            <button type="button" id="btn-add" onclick="Adduser()">
-                <span>+</span> Add User
-            </button>
-            <button type="button" id="btn-add" class="btn-update" onclick="updateUser()" style="display:none;">
-                <span>✎</span> Update User
-            </button>
-        </div>
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3L1 8L12 13L21 9.09V16H23V8L12 3Z" fill="currentColor"/>
+          <path d="M5 10.18V15.5C5 15.5 5 19 12 19C19 19 19 15.5 19 15.5V10.18L12 13.4L5 10.18Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="title">CLUBCODE</div>
+        <div class="subtitle">School SMS</div>
+      </div>
     </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Remark</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+    <!-- <div class="segmented">
+      <button class="active" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
+        Admin
+      </button>
+      <button type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V6a2 2 0 012-2h13v14H6a2 2 0 000 4h14"/></svg>
+        Teacher
+      </button>
+    </div> -->
 
-            <tbody id="product-table-body">
+    <div class="nav-label">Admin Portal</div>
 
-            </tbody>
-        </table>
+    <nav class="nav" id="nav">
+      
+    </nav>
+
+    <div class="user-card">
+      <div class="avatar">RG</div>
+      <div class="user-info">
+        <div class="name">Rosa Guerrero</div>
+        <div class="role">Administrator</div>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="page-title">Dashboard</h1>
+        <div class="sub">2025–2026 · Semester 1</div>
+      </div>
+      <div class="bell-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+
+    </div>
+  </div>
+</div>
+
+<script type="module" src="src/main.js"></script>
+
 </body>
-<script>
-    var api = "http://localhost:3000/api/user";
-
-    // auth guard: redirect to login if no token
-    if (!localStorage.getItem("token")) {
-        window.location.href = "login.html";
-    }
-
-    // build headers with the stored Bearer token
-    function authHeaders(extra) {
-        const token = localStorage.getItem("token");
-        return Object.assign({
-            'Authorization': 'Bearer ' + token
-        }, extra || {});
-    }
-
-    // logout helper: clear token and go back to login
-    function logout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "login.html";
-    }
-
-    // if a request comes back 401, the token is invalid/expired -> logout
-    function handleResponse(response) {
-        if (response.status === 401) {
-            logout();
-            throw new Error("Unauthorized");
-        }
-        return response.json();
-    }
-
-
-    function getdata() {
-        fetch(api, { headers: authHeaders() })
-            .then(handleResponse)
-            .then(data => {
-                const tableBody = document.getElementById("product-table-body");
-                var html = "";
-                var listUser = data.result;
-                for (var obj in listUser) {
-                    html += `
-            <tr>
-                <td>${listUser[obj].user_id}</td>
-                <td>${listUser[obj].username}</td>
-                <td>${listUser[obj].password}</td>
-                <td>${listUser[obj].remark}</td>
-                <td>
-                    <button onclick="editUser('${listUser[obj].user_id}')">Edit</button>
-                    <button onclick="deleteUser('${listUser[obj].user_id}')">Delete</button>
-                </td>
-            </tr>
-            `;
-                }
-                tableBody.innerHTML = html;
-            });
-    }
-    //load data when page load
-    window.onload = function () {
-        getdata();
-    }
-
-
-    function Adduser() {
-        const userId = document.getElementById("userId").value;
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        const remark = document.getElementById("remark").value;
-
-
-        //body of request
-        var objectUser = {
-            userid: userId,
-            username: username,
-            password: password,
-            remark: remark
-        }
-
-        fetch(api, {
-            method: 'POST',
-            headers: authHeaders({ 'Content-Type': 'application/json' }),
-            body: JSON.stringify(objectUser)
-        })
-            .then(handleResponse)
-            .then(data => {
-                console.log(data);
-                getdata();
-                showAlert('User added successfully.', 'success', 'Success');
-            })
-            .catch(error => console.error('Error:', error));
-    }
-    //delete user
-    function deleteUser(id) {
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`${api}/delete/${id}`, {
-                    method: 'DELETE',
-                    headers: authHeaders()
-                })
-                    .then(handleResponse)
-                    .then(data => {
-                        console.log(data);
-                        getdata();
-                        showAlert(data.message, 'success', 'Success');
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-        });
-
-    }
-
-
-    //edit 
-    function editUser(id) {
-        fetch(`${api}?id=${id}`, { headers: authHeaders() })
-            .then(handleResponse)
-            .then(data => {
-                const user = data.result;
-                document.getElementById("userId").value = user.user_id;
-                document.getElementById("username").value = user.username;
-                document.getElementById("password").value = user.password;
-                document.getElementById("remark").value = user.remark;
-                document.getElementById("userId").readOnly = true;
-                //change button to update
-                document.getElementById("btn-add").style.display = "none";
-                document.querySelector(".btn-update").style.display = "inline-block";
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-
-    //update
-    function updateUser() {
-        const userId = document.getElementById("userId").value;
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        const remark = document.getElementById("remark").value;
-
-        var objectUser = {
-            userid: userId,
-            username: username,
-            password: password,
-            remark: remark
-        }
-
-        fetch(`${api}/update`, {
-            method: 'PUT',
-            headers: authHeaders({ 'Content-Type': 'application/json' }),
-            body: JSON.stringify(objectUser)
-        })
-            .then(handleResponse)
-            .then(data => {
-                console.log(data);
-                getdata();
-                showAlert('User updated successfully.', 'success', 'Success');
-                //reset form
-                document.getElementById("userId").readOnly = false;
-                document.getElementById("userId").value = "";
-                document.getElementById("username").value = "";
-                document.getElementById("password").value = "";
-                document.getElementById("remark").value = "";
-                //change button to add
-                document.getElementById("btn-add").style.display = "inline-block";
-                document.querySelector(".btn-update").style.display = "none";
-            })
-            .catch(error => console.error('Error:', error));
-    }
-    function showAlert(message, icon, title) {
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: icon,
-            confirmButtonText: 'OK'
-        });
-    }
-</script>
-
 </html>

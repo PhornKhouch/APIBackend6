@@ -43,3 +43,6 @@ Thumbs.db
 
 # ─── Claude ───
 .claude/
+
+# ─── Local backup archives ───
+*.zip

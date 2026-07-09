@@ -1,0 +1,13 @@
+@media (max-width:1024px){
+  .row-2{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:720px){
+  .app{flex-direction:column;height:auto;overflow:visible;}
+  .sidebar{width:100%;min-width:0;height:auto;}
+  .main{height:auto;overflow:visible;}
+  .content{overflow-y:visible;}
+  .stat-grid{grid-template-columns:1fr;}
+  .donut-wrap{flex-direction:column;align-items:flex-start;}
+  .form-grid{grid-template-columns:1fr;}
+}

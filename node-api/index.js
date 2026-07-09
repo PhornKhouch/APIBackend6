@@ -6,16 +6,18 @@ var express = require('express');
 const cors = require('cors'); 
 var UserRoute = require('./src/routes/userRoute');
 var teacherRoute = require('./src/routes/teacherRoute');
+var subjectRoute = require('./src/routes/subjectRoute');
+var semesterRoute = require('./src/routes/semesterRoute');
 var productRoute = require('./src/routes/productRoute');
 var {BackgroundJob} = require('./src/controller/userController');
-var {Employee} = require('./src/routes/employeeRoute');
+// TODO: employeeRoute references src/models/{employee,order,sale,department}.js which
+// don't exist in the repo, so requiring it crashes the server. Re-enable once those
+// models are added back.
+// var {Employee} = require('./src/routes/employeeRoute');
 var sequelize = require('./src/config/dbconnectSeqeulize');
 var {cardpaywayRoute} = require('./src/routes/cardpaywayRoute');
-// register models so sequelize.sync() knows about them
-require('./src/models/employee');
-require('./src/models/order');
-require('./src/models/sale');
-require('./src/models/department');
+// register SMS models so sequelize.sync() knows about them
+require('./src/models');
 var app = express();
 app.use(cors());
 app.use(express.json());
@@ -23,8 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 
 UserRoute(app);
 teacherRoute(app);
+subjectRoute(app);
+semesterRoute(app);
 productRoute(app);
-Employee(app);
+// Employee(app);
 cardpaywayRoute(app);
 //running server
 //auto migration
