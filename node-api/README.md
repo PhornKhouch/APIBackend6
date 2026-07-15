@@ -78,3 +78,14 @@ Copy the generated `whsec_...` value into `STRIPE_WEBHOOK_SECRET`, restart the s
 - Create prices and products in Stripe Dashboard instead of hardcoding demo `price_data`.
 - Fulfill orders from the webhook, not only from the success page.
 - Use HTTPS in production.
+
+
+# deploy project to Railway
+1 - Create a new project on Railway
+2 - Connect your GitHub account
+3 - Deploy the project
+4 - Configure the environment variables
+5 - Configure the build command
+6 - Configure the start command
+7 - Configure the port
+8 - Configure the domain (optional)

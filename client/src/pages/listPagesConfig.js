@@ -1,4 +1,3 @@
-import { studentsApi } from '../api/studentsApi.js';
 import { classesApi } from '../api/classesApi.js';
 import { scheduleApi } from '../api/scheduleApi.js';
 import { attendanceApi } from '../api/attendanceApi.js';
@@ -9,20 +8,10 @@ import { usersApi } from '../api/usersApi.js';
 
 // Drives js/pages/genericListPage.js — add a new section here (plus a nav
 // entry in js/navConfig.js) to get a routable list page for free.
-// Note: 'teachers' and 'subjects' have outgrown this generic table and now
-// have their own screens — see pages/{teachers,subjects}Page.js and
-// router.js's CUSTOM_PAGES.
+// Note: 'students', 'teachers' and 'subjects' have outgrown this generic table
+// and now have their own screens — see pages/{students,teachers,subjects}Page.js
+// and router.js's CUSTOM_PAGES.
 export const LIST_PAGES = {
-  students: {
-    title: 'Students',
-    description: 'Manage student records, enrollment, and profiles.',
-    api: studentsApi,
-    columns: [
-      { key: 'name', label: 'Name' },
-      { key: 'grade', label: 'Grade' },
-      { key: 'status', label: 'Status', isStatus: true },
-    ],
-  },
   classes: {
     title: 'Classes',
     description: 'Organize classes, sections, and rosters.',

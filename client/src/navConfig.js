@@ -2,6 +2,7 @@
 // Add a new section here and it shows up in the sidebar and becomes routable.
 export const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { key: 'setup', label: 'Setup', icon: 'setup' },
   { key: 'students', label: 'Students', icon: 'students' },
   { key: 'teachers', label: 'Teachers', icon: 'teachers' },
   { key: 'classes', label: 'Classes', icon: 'classes' },

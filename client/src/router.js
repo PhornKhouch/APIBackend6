@@ -1,5 +1,7 @@
 import { NAV_ITEMS } from './navConfig.js';
 import { renderDashboardPage } from './pages/dashboard.js';
+import { renderSetupPage } from './pages/setupPage.js';
+import { renderStudentsPage } from './pages/studentsPage.js';
 import { renderTeachersPage } from './pages/teachersPage.js';
 import { renderSubjectsPage } from './pages/subjectsPage.js';
 import { renderSemestersPage } from './pages/semestersPage.js';
@@ -12,6 +14,8 @@ const TITLES = Object.fromEntries(NAV_ITEMS.map((item) => [item.key, item.label]
 // Sections with a dedicated screen (real CRUD, not the generic mock table).
 const CUSTOM_PAGES = {
   dashboard: renderDashboardPage,
+  setup: renderSetupPage,
+  students: renderStudentsPage,
   teachers: renderTeachersPage,
   subjects: renderSubjectsPage,
   semesters: renderSemestersPage,

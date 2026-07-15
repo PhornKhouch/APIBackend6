@@ -8,7 +8,7 @@ export const CONFIG = {
   // Flip a resource to false once its node-api route exists.
   USE_MOCKS: {
     dashboard: true,
-    students: true,
+    students: false,
     teachers: false,
     classes: true,
     subjects: false,
