@@ -11,6 +11,7 @@ var semesterRoute = require('./src/routes/semesterRoute');
 var academicRoute = require('./src/routes/academicRoute');
 var timeSlotRoute = require('./src/routes/time_slotRoute');
 var studentRoute = require('./src/routes/studentRoute');
+var classesRoute = require('./src/routes/classesRoute');
 var productRoute = require('./src/routes/productRoute');
 var {BackgroundJob} = require('./src/controller/userController');
 // TODO: employeeRoute references src/models/{employee,order,sale,department}.js which
@@ -33,6 +34,7 @@ semesterRoute(app);
 academicRoute(app);
 timeSlotRoute(app);
 studentRoute(app);
+classesRoute(app);
 productRoute(app);
 // Employee(app);
 cardpaywayRoute(app);

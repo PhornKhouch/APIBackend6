@@ -10,6 +10,7 @@ const Class = sequelize.define(
     semester_id: { type: DataTypes.INTEGER, allowNull: false },
     room_number: { type: DataTypes.STRING(20), allowNull: true },
     max_capacity: { type: DataTypes.INTEGER, allowNull: true },
+    homeroom_teacher_id: { type: DataTypes.INTEGER, allowNull: true },
   },
   {
     tableName: "classes",
