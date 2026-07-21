@@ -11,6 +11,7 @@ const Class = require("./Class");
 const ClassEnrollment = require("./ClassEnrollment");
 const TimeSlot = require("./TimeSlot");
 const Schedule = require("./Schedule");
+const ScheduleStudent = require("./ScheduleStudent");
 const AttendanceRecord = require("./AttendanceRecord");
 const GradingCriteria = require("./GradingCriteria");
 const Assessment = require("./Assessment");
@@ -61,6 +62,12 @@ Teacher.hasMany(Schedule, { foreignKey: "teacher_id" });
 Schedule.belongsTo(Teacher, { foreignKey: "teacher_id" });
 TimeSlot.hasMany(Schedule, { foreignKey: "time_slot_id" });
 Schedule.belongsTo(TimeSlot, { foreignKey: "time_slot_id" });
+
+// schedule_students (students assigned to a specific schedule entry)
+Schedule.hasMany(ScheduleStudent, { foreignKey: "schedule_id" });
+ScheduleStudent.belongsTo(Schedule, { foreignKey: "schedule_id" });
+Student.hasMany(ScheduleStudent, { foreignKey: "student_id" });
+ScheduleStudent.belongsTo(Student, { foreignKey: "student_id" });
 
 // attendance_records
 Schedule.hasMany(AttendanceRecord, { foreignKey: "schedule_id" });
@@ -149,6 +156,7 @@ module.exports = {
   ClassEnrollment,
   TimeSlot,
   Schedule,
+  ScheduleStudent,
   AttendanceRecord,
   GradingCriteria,
   Assessment,

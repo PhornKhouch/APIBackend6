@@ -1,4 +1,4 @@
-const { Schedule, Class, Subject, Teacher, TimeSlot } = require("../models");
+const { Schedule, Class, Subject, Teacher, TimeSlot, ScheduleStudent, Student } = require("../models");
 const logError = require("../helper/log_helper");
 
 // Includes reused across list/getOne so a schedule row always comes back with
@@ -126,10 +126,77 @@ const deleteSchedule = async (req, res) => {
     }
 };
 
+// GET /api/v1/schedule/:id/students — the students assigned to this schedule
+// entry, each row carrying its nested Student so the panel can show names.
+const getScheduleStudents = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const schedule = await Schedule.findByPk(id);
+        if (!schedule) {
+            return res.status(404).json({ message: `Schedule not found with ID: ${id}` });
+        }
+
+        const assignments = await ScheduleStudent.findAll({
+            where: { schedule_id: id },
+            include: [{ model: Student }],
+        });
+
+        res.status(200).json({
+            message: "Assigned students retrieved successfully",
+            data: assignments,
+        });
+    } catch (err) {
+        logError(res, err, "scheduleController");
+    }
+};
+
+// PUT /api/v1/schedule/:id/students — replace the full set of students assigned
+// to this schedule entry. Body: { student_ids: [1, 2, ...] }. Replaces rather
+// than appends so it maps cleanly onto the multi-select panel's checked state.
+const setScheduleStudents = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const schedule = await Schedule.findByPk(id);
+        if (!schedule) {
+            return res.status(404).json({ message: `Schedule not found with ID: ${id}` });
+        }
+
+        const { student_ids } = req.body;
+        if (!Array.isArray(student_ids)) {
+            return res.status(400).json({ message: "student_ids must be an array" });
+        }
+
+        // De-dupe and drop empties before replacing the assignment set.
+        const ids = [...new Set(student_ids.map(Number).filter((n) => Number.isInteger(n)))];
+
+        await ScheduleStudent.destroy({ where: { schedule_id: id } });
+        if (ids.length) {
+            const today = new Date().toISOString().slice(0, 10);
+            await ScheduleStudent.bulkCreate(
+                ids.map((student_id) => ({ schedule_id: id, student_id, assigned_date: today }))
+            );
+        }
+
+        const assignments = await ScheduleStudent.findAll({
+            where: { schedule_id: id },
+            include: [{ model: Student }],
+        });
+
+        res.status(200).json({
+            message: "Assigned students updated successfully",
+            data: assignments,
+        });
+    } catch (err) {
+        logError(res, err, "scheduleController");
+    }
+};
+
 module.exports = {
     getAllSchedules,
     getOneSchedule,
     createSchedule,
     updateSchedule,
     deleteSchedule,
+    getScheduleStudents,
+    setScheduleStudents,
 };
