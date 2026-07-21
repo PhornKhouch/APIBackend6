@@ -1,4 +1,4 @@
-const { Class, AcademicYear, Semester, Teacher } = require("../models");
+const { Class, AcademicYear, Semester, Teacher, ClassEnrollment, Student } = require("../models");
 const logError = require("../helper/log_helper");
 
 // Includes reused across list/getOne so a class always comes back with its
@@ -133,10 +133,82 @@ const deleteClass = async (req, res) => {
     }
 };
 
+// GET /api/v1/class/:id/students — students enrolled in this class, each row
+// carrying its nested Student so the picker can show names.
+const getClassStudents = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const classItem = await Class.findByPk(id);
+        if (!classItem) {
+            return res.status(404).json({ message: `Class not found with ID: ${id}` });
+        }
+
+        const enrollments = await ClassEnrollment.findAll({
+            where: { class_id: id },
+            include: [{ model: Student }],
+        });
+
+        res.status(200).json({
+            message: "Enrolled students retrieved successfully",
+            data: enrollments,
+        });
+    } catch (err) {
+        logError(res, err, "classesController");
+    }
+};
+
+// PUT /api/v1/class/:id/students — replace the full set of students enrolled in
+// this class. Body: { student_ids: [1, 2, ...] }. Replaces rather than appends
+// so it maps cleanly onto the multi-select panel's checked state.
+const setClassStudents = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const classItem = await Class.findByPk(id);
+        if (!classItem) {
+            return res.status(404).json({ message: `Class not found with ID: ${id}` });
+        }
+
+        const { student_ids } = req.body;
+        if (!Array.isArray(student_ids)) {
+            return res.status(400).json({ message: "student_ids must be an array" });
+        }
+
+        // De-dupe and drop empties before replacing the enrollment set.
+        const ids = [...new Set(student_ids.map(Number).filter((n) => Number.isInteger(n)))];
+
+        await ClassEnrollment.destroy({ where: { class_id: id } });
+        if (ids.length) {
+            const today = new Date().toISOString().slice(0, 10);
+            await ClassEnrollment.bulkCreate(
+                ids.map((student_id) => ({
+                    class_id: id,
+                    student_id,
+                    enrollment_date: today,
+                    status: "Active",
+                }))
+            );
+        }
+
+        const enrollments = await ClassEnrollment.findAll({
+            where: { class_id: id },
+            include: [{ model: Student }],
+        });
+
+        res.status(200).json({
+            message: "Enrolled students updated successfully",
+            data: enrollments,
+        });
+    } catch (err) {
+        logError(res, err, "classesController");
+    }
+};
+
 module.exports = {
     getAllClasses,
     getOneClass,
     createClass,
     updateClass,
     deleteClass,
+    getClassStudents,
+    setClassStudents,
 };
