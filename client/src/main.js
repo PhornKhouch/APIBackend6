@@ -1,5 +1,6 @@
 import { renderSidebarNav } from './components/sidebar.js';
 import { createRouter } from './router.js';
+import { initThemeToggle } from './components/themeToggle.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const navEl = document.getElementById('nav');
@@ -10,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderSidebarNav(navEl, navigateTo);
   navigateTo('dashboard');
+
+  initThemeToggle(document.getElementById('theme-toggle'));
 
   // Admin/Teacher segmented toggle (visual only for now).
   document.querySelectorAll('.segmented button').forEach((btn) => {

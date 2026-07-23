@@ -7,7 +7,6 @@ export const NAV_ITEMS = [
   { key: 'teachers', label: 'Teachers', icon: 'teachers' },
   { key: 'classes', label: 'Classes', icon: 'classes' },
   { key: 'subjects', label: 'Subjects', icon: 'subjects' },
-  { key: 'semesters', label: 'Semesters', icon: 'semesters' },
   { key: 'schedule', label: 'Schedule', icon: 'schedule' },
   { key: 'attendance', label: 'Attendance', icon: 'attendance' },
   { key: 'billing', label: 'Billing', icon: 'billing', badgeKey: 'billingOverdueCount' },

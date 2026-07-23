@@ -400,7 +400,7 @@ tbody tr:last-child td{border-bottom:none;}
   transition:background .15s ease,border-color .15s ease,opacity .15s ease;
 }
 .btn svg{width:15px;height:15px;}
-.btn:hover{background:#243046;}
+.btn:hover{background:var(--card-hover);}
 .btn:disabled{opacity:.6;cursor:not-allowed;}
 .btn-primary{
   background:var(--orange);
@@ -530,6 +530,107 @@ tbody tr:last-child td{border-bottom:none;}
   color:var(--orange);
 }
 
+/* ---------- CLASS CARDS ---------- */
+.class-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:18px;
+}
+.class-card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease;
+}
+.class-card:hover{
+  border-color:color-mix(in srgb, var(--orange) 45%, var(--border));
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(0,0,0,.28);
+}
+.cc-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:4px;
+}
+.cc-title{
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  color:var(--text);
+}
+.cc-room{
+  flex-shrink:0;
+  padding:4px 10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--card-2);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.cc-meta{
+  font-size:12.5px;
+  color:var(--muted-2);
+  margin-bottom:16px;
+}
+.cc-homeroom{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+  color:var(--muted);
+  padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:16px;
+}
+.cc-homeroom svg{width:15px;height:15px;color:var(--muted-2);flex-shrink:0;}
+.cc-homeroom .hr-label{color:var(--muted-2);}
+.cc-homeroom .hr-name{color:var(--text);font-weight:600;}
+.cc-cap-top{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+.cc-cap-label{font-size:12.5px;color:var(--muted);}
+.cc-cap-value{font-size:13.5px;font-weight:700;color:var(--text);}
+.cc-bar{
+  height:7px;
+  border-radius:99px;
+  background:var(--card-2);
+  overflow:hidden;
+}
+.cc-bar-fill{
+  height:100%;
+  border-radius:99px;
+  transition:width .3s ease;
+  background:var(--green);
+}
+.cc-bar-fill.is-high{background:var(--yellow);}
+.cc-bar-fill.is-full{background:var(--red);}
+/* Hover-revealed row actions — keeps the resting card clean per the mockup */
+.cc-actions{
+  position:absolute;
+  top:14px;
+  right:14px;
+  display:flex;
+  gap:6px;
+  opacity:0;
+  transform:translateY(-2px);
+  transition:opacity .15s ease,transform .15s ease;
+}
+.class-card:hover .cc-actions{opacity:1;transform:translateY(0);}
+.cc-actions .btn-icon{
+  background:var(--card);
+  border-color:var(--border);
+}
+.cc-actions .btn-icon:hover{background:var(--card-2);}
+
 /* ---------- WEEKLY TIMETABLE ---------- */
 .timetable-scroll{overflow-x:auto;}
 .timetable{
@@ -651,3 +752,47 @@ tbody tr:last-child td{border-bottom:none;}
 .subj-5{--accent:#ec4899;}
 .subj-6{--accent:#22c55e;}
 .subj-7{--accent:#6366f1;}
+
+/* ---------- BILLING & PAYMENTS ---------- */
+.billing-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:20px;
+}
+.b-stat{padding:18px 20px;}
+.b-stat-label{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:500;
+  margin-bottom:8px;
+}
+.b-stat-value{
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:-.01em;
+}
+.b-stat-value.is-collected{color:var(--green);}
+.b-stat-value.is-outstanding{color:var(--orange);}
+.b-stat-value.is-overdue{color:var(--red);}
+
+/* Student cell: little round initials avatar + name */
+.cell-user{display:flex;align-items:center;gap:10px;}
+.table-avatar{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.table-avatar.av-0{background:#3b82f6;}
+.table-avatar.av-1{background:#a78bfa;}
+.table-avatar.av-2{background:#22c55e;}
+.table-avatar.av-3{background:#f59e0b;}
+.table-avatar.av-4{background:#ec4899;}
+.table-avatar.av-5{background:#2dd4bf;}
+
+.bal-due{color:var(--orange);font-weight:600;}
+td.mono{font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--muted);}
+td.ta-right .table-actions{justify-content:flex-end;}
+.btn-record{padding:6px 14px;font-size:12.5px;}

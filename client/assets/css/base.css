@@ -13,5 +13,7 @@ button{font-family:inherit;}
 
 ::-webkit-scrollbar{width:9px;height:9px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#2a3548;border-radius:10px;}
-::-webkit-scrollbar-thumb:hover{background:#37455c;}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-hover);}
+
+body{transition:background .2s ease,color .2s ease;}

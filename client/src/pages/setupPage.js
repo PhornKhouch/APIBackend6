@@ -1,5 +1,6 @@
 import { academicYearsApi } from '../api/academicYearsApi.js';
 import { timeSlotsApi } from '../api/timeSlotsApi.js';
+import { semestersApi } from '../api/semestersApi.js';
 import { icon } from '../components/icons.js';
 import { renderStatus } from '../components/table.js';
 import { toast } from '../components/toast.js';
@@ -11,23 +12,27 @@ const fmtTime = (t) => (t ? String(t).slice(0, 5) : '');
 const YEAR_STATUS_OPTIONS = ['Active', 'Closed'];
 const DAY_OPTIONS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-// Setup screen with two tabs — Academic Years (/api/v1/academic-year) and
-// Time Slots (/api/v1/time-slot). Each tab is a self-contained CRUD panel.
+// Setup screen with three tabs — Academic Years (/api/v1/academic-year),
+// Time Slots (/api/v1/time-slot) and Semesters (/api/v1/semester). Each tab is
+// a self-contained CRUD panel.
 export async function renderSetupPage(contentEl) {
   contentEl.innerHTML = `
-    <p class="placeholder-desc">Configure academic years and class time slots.</p>
+    <p class="placeholder-desc">Configure academic years, class time slots and semesters.</p>
     <div class="tabs" id="setup-tabs">
       <button class="tab active" data-tab="academic-years" type="button">Academic Years</button>
       <button class="tab" data-tab="time-slots" type="button">Time Slots</button>
+      <button class="tab" data-tab="semesters" type="button">Semesters</button>
     </div>
     <div class="tab-panel" data-panel="academic-years"></div>
     <div class="tab-panel" data-panel="time-slots" hidden></div>
+    <div class="tab-panel" data-panel="semesters" hidden></div>
   `;
 
   const tabsEl = contentEl.querySelector('#setup-tabs');
   const panels = {
     'academic-years': contentEl.querySelector('[data-panel="academic-years"]'),
     'time-slots': contentEl.querySelector('[data-panel="time-slots"]'),
+    'semesters': contentEl.querySelector('[data-panel="semesters"]'),
   };
 
   tabsEl.querySelectorAll('.tab').forEach((btn) => {
@@ -43,6 +48,7 @@ export async function renderSetupPage(contentEl) {
   await Promise.all([
     setupAcademicYears(panels['academic-years']),
     setupTimeSlots(panels['time-slots']),
+    setupSemesters(panels['semesters']),
   ]);
 }
 
@@ -421,4 +427,221 @@ async function setupTimeSlots(panelEl) {
   }
 
   await load();
+}
+
+// ---------- SEMESTERS ----------
+async function setupSemesters(panelEl) {
+  panelEl.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div><h3>Semesters</h3></div>
+        <button class="btn btn-primary" id="add-semester-btn" type="button">${icon('add')} Add Semester</button>
+      </div>
+      <div id="semesters-table-target"></div>
+    </div>
+
+    <div class="modal-overlay" id="semester-modal-overlay" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="semester-modal-title">Add Semester</h3>
+          <button class="modal-close" id="semester-modal-close" type="button">${icon('close')}</button>
+        </div>
+        <div class="modal-error" id="semester-modal-error" hidden></div>
+        <form id="semester-form" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Academic Year</label>
+              <select name="academic_year_id" id="semester-academic-year" required>
+                <option value="">— Select —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Semester Name</label>
+              <input type="text" name="semester_name" required>
+            </div>
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="date" name="start_date" required>
+            </div>
+            <div class="form-group">
+              <label>End Date</label>
+              <input type="date" name="end_date" required>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="semester-cancel-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="semester-save-btn">Save Semester</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const tableEl = panelEl.querySelector('#semesters-table-target');
+  const overlayEl = panelEl.querySelector('#semester-modal-overlay');
+  const formEl = panelEl.querySelector('#semester-form');
+  const titleEl = panelEl.querySelector('#semester-modal-title');
+  const errorEl = panelEl.querySelector('#semester-modal-error');
+  const yearEl = panelEl.querySelector('#semester-academic-year');
+  const saveBtnEl = panelEl.querySelector('#semester-save-btn');
+
+  let cache = [];
+  // Academic years pulled from /api/v1/academic-year so the dropdown always
+  // matches the real seeded ids instead of a hard-coded list.
+  let academicYears = [];
+  let editingId = null;
+
+  function renderAcademicYearOptions(selectedId) {
+    const options = academicYears
+      .map((y) => `<option value="${y.academic_year_id}">${y.year_name}</option>`)
+      .join('');
+    yearEl.innerHTML = `<option value="">— Select —</option>${options}`;
+    if (selectedId != null) yearEl.value = String(selectedId);
+  }
+
+  async function loadAcademicYears() {
+    try {
+      academicYears = await academicYearsApi.list();
+    } catch (err) {
+      academicYears = [];
+      toast.error(`Failed to load academic years: ${err.message}`);
+    }
+    renderAcademicYearOptions(null);
+  }
+
+  function openModal(semester) {
+    editingId = semester ? semester.semester_id : null;
+    errorEl.hidden = true;
+    formEl.reset();
+
+    const isEdit = Boolean(semester);
+    titleEl.textContent = isEdit ? 'Edit Semester' : 'Add Semester';
+    renderAcademicYearOptions(isEdit ? semester.academic_year_id : null);
+
+    if (isEdit) {
+      formEl.elements.semester_name.value = semester.semester_name || '';
+      formEl.elements.start_date.value = fmtDate(semester.start_date);
+      formEl.elements.end_date.value = fmtDate(semester.end_date);
+    }
+
+    overlayEl.hidden = false;
+  }
+
+  function closeModal() {
+    overlayEl.hidden = true;
+    editingId = null;
+  }
+
+  panelEl.querySelector('#add-semester-btn').addEventListener('click', () => openModal(null));
+  panelEl.querySelector('#semester-modal-close').addEventListener('click', closeModal);
+  panelEl.querySelector('#semester-cancel-btn').addEventListener('click', closeModal);
+  overlayEl.addEventListener('click', (e) => {
+    if (e.target === overlayEl) closeModal();
+  });
+
+  formEl.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!formEl.reportValidity()) return;
+
+    errorEl.hidden = true;
+    const payload = Object.fromEntries(new FormData(formEl).entries());
+    Object.keys(payload).forEach((key) => {
+      if (payload[key] === '') delete payload[key];
+    });
+
+    saveBtnEl.disabled = true;
+    try {
+      if (editingId) {
+        await semestersApi.update(editingId, payload);
+        toast.success('Semester updated successfully');
+      } else {
+        await semestersApi.create(payload);
+        toast.success('Semester created successfully');
+      }
+      closeModal();
+      await load();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.hidden = false;
+    } finally {
+      saveBtnEl.disabled = false;
+    }
+  });
+
+  async function handleDelete(semester) {
+    const confirmed = await confirmDelete({
+      title: `Delete semester "${semester.semester_name}"?`,
+      text: 'This action cannot be undone.',
+    });
+    if (!confirmed) return;
+    try {
+      await semestersApi.remove(semester.semester_id);
+      toast.success('Semester deleted successfully');
+      await load();
+    } catch (err) {
+      toast.error(`Failed to delete semester: ${err.message}`);
+    }
+  }
+
+  function renderTable(semesters) {
+    if (!semesters.length) {
+      tableEl.innerHTML = '<div class="state-msg">No semesters yet.</div>';
+      return;
+    }
+
+    const yearName = (s) => {
+      if (s.AcademicYear) return s.AcademicYear.year_name;
+      const match = academicYears.find((y) => String(y.academic_year_id) === String(s.academic_year_id));
+      return match ? match.year_name : '—';
+    };
+
+    const rows = semesters.map((s) => `
+      <tr>
+        <td>${s.semester_name}</td>
+        <td>${yearName(s)}</td>
+        <td>${fmtDate(s.start_date) || '—'}</td>
+        <td>${fmtDate(s.end_date) || '—'}</td>
+        <td>
+          <div class="table-actions">
+            <button class="btn btn-icon" data-action="edit" data-id="${s.semester_id}" type="button" title="Edit">${icon('edit')}</button>
+            <button class="btn btn-icon btn-danger" data-action="delete" data-id="${s.semester_id}" type="button" title="Delete">${icon('trash')}</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    tableEl.innerHTML = `
+      <table>
+        <thead>
+          <tr><th>Semester</th><th>Academic Year</th><th>Start Date</th><th>End Date</th><th></th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+
+    tableEl.querySelectorAll('[data-action="edit"]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const semester = cache.find((s) => String(s.semester_id) === btn.dataset.id);
+        if (semester) openModal(semester);
+      });
+    });
+    tableEl.querySelectorAll('[data-action="delete"]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const semester = cache.find((s) => String(s.semester_id) === btn.dataset.id);
+        if (semester) handleDelete(semester);
+      });
+    });
+  }
+
+  async function load() {
+    tableEl.innerHTML = '<div class="state-msg">Loading semesters…</div>';
+    try {
+      cache = await semestersApi.list();
+      renderTable(cache);
+    } catch (err) {
+      tableEl.innerHTML = `<div class="state-msg error">Failed to load semesters: ${err.message}</div>`;
+    }
+  }
+
+  await Promise.all([loadAcademicYears(), load()]);
 }

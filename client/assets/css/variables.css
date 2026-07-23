@@ -1,4 +1,5 @@
 :root {
+  /* Dark theme (default) */
   --bg: #0f1729;
   --card: #1a2332;
   --card-2: #1f2a3d;
@@ -6,6 +7,14 @@
   --text: #f3f5f9;
   --muted: #8b96ab;
   --muted-2: #6b7688;
+
+  --scrollbar: #2a3548;
+  --scrollbar-hover: #37455c;
+  --card-hover: #243046;
+
+  --sidebar-bg: #0c1322;
+  --sidebar-panel: #131c2e;
+  --hover-overlay: rgba(255, 255, 255, .04);
 
   --orange: #f59e0b;
   --orange-dim: rgba(245, 158, 11, 0.15);
@@ -18,4 +27,24 @@
 
   --radius: 14px;
   --radius-sm: 10px;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --card-2: #f7f9fc;
+  --border: #e4e9f0;
+  --text: #1a2332;
+  --muted: #64708a;
+  --muted-2: #97a1b4;
+
+  --scrollbar: #d3dae5;
+  --scrollbar-hover: #b9c3d3;
+  --card-hover: #eef1f7;
+
+  --sidebar-bg: #ffffff;
+  --sidebar-panel: #f4f6fb;
+  --hover-overlay: rgba(15, 23, 41, .05);
+
+  --orange-dim: rgba(245, 158, 11, 0.12);
 }

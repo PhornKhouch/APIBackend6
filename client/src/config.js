@@ -1,7 +1,8 @@
 // Central place to point the client at a real backend.
 // node-api currently runs on :3000 (see ../node-api/index.js).
 export const CONFIG = {
-  API_BASE_URL: 'http://localhost:3000',
+  //API_BASE_URL: 'http://localhost:3000', // localhost 
+  API_BASE_URL : 'https://api-sms.up.railway.app',
 
   // Per-resource switch: true = use local mock data (data/mock.js),
   // false = call the real endpoint via js/api/*.
@@ -10,12 +11,12 @@ export const CONFIG = {
     dashboard: true,
     students: false,
     teachers: false,
-    classes: true,
+    classes: false,
     subjects: false,
     semesters: false,
-    schedule: true,
+    schedule: false,
     attendance: true,
-    billing: true,
+    billing: false,
     certifications: true,
     reports: true,
     users: true,

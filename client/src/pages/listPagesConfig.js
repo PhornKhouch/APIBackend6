@@ -1,5 +1,3 @@
-import { classesApi } from '../api/classesApi.js';
-import { scheduleApi } from '../api/scheduleApi.js';
 import { attendanceApi } from '../api/attendanceApi.js';
 import { billingApi } from '../api/billingApi.js';
 import { certificationsApi } from '../api/certificationsApi.js';
@@ -8,30 +6,11 @@ import { usersApi } from '../api/usersApi.js';
 
 // Drives js/pages/genericListPage.js — add a new section here (plus a nav
 // entry in js/navConfig.js) to get a routable list page for free.
-// Note: 'students', 'teachers' and 'subjects' have outgrown this generic table
-// and now have their own screens — see pages/{students,teachers,subjects}Page.js
-// and router.js's CUSTOM_PAGES.
+// Note: 'students', 'teachers', 'subjects', 'classes' and 'schedule' have
+// outgrown this generic table and now have their own screens — see
+// pages/{students,teachers,subjects,class,schedule}Page.js and router.js's
+// CUSTOM_PAGES.
 export const LIST_PAGES = {
-  classes: {
-    title: 'Classes',
-    description: 'Organize classes, sections, and rosters.',
-    api: classesApi,
-    columns: [
-      { key: 'class', label: 'Class' },
-      { key: 'homeroomTeacher', label: 'Homeroom Teacher' },
-      { key: 'status', label: 'Status', isStatus: true },
-    ],
-  },
-  schedule: {
-    title: 'Schedule',
-    description: 'Plan and review the weekly class timetable.',
-    api: scheduleApi,
-    columns: [
-      { key: 'time', label: 'Time' },
-      { key: 'class', label: 'Class' },
-      { key: 'status', label: 'Status', isStatus: true },
-    ],
-  },
   attendance: {
     title: 'Attendance',
     description: 'Track daily attendance across all classes.',

@@ -16,14 +16,14 @@ const studentName = (s) => (s ? `${s.first_name || ''} ${s.last_name || ''}`.tri
 // their own endpoints so the ids always match real rows.
 export async function renderClassesPage(contentEl) {
   contentEl.innerHTML = `
-    <p class="placeholder-desc">Organize classes, sections, and rosters.</p>
-    <div class="card">
-      <div class="card-header">
-        <div><h3>Classes</h3></div>
-        <button class="btn btn-primary" id="add-class-btn" type="button">${icon('add')} Add Class</button>
+    <div class="card-header">
+      <div>
+        <h3>Classes</h3>
+        <div class="sub">Academic structure &amp; sections</div>
       </div>
-      <div id="classes-table-target"></div>
+      <button class="btn btn-primary" id="add-class-btn" type="button">${icon('add')} New class</button>
     </div>
+    <div id="classes-grid-target"></div>
 
     <div class="modal-overlay" id="class-modal-overlay" hidden>
       <div class="modal">
@@ -91,7 +91,7 @@ export async function renderClassesPage(contentEl) {
     </div>
   `;
 
-  const tableEl = contentEl.querySelector('#classes-table-target');
+  const tableEl = contentEl.querySelector('#classes-grid-target');
   const overlayEl = contentEl.querySelector('#class-modal-overlay');
   const formEl = contentEl.querySelector('#class-form');
   const titleEl = contentEl.querySelector('#class-modal-title');
@@ -348,33 +348,56 @@ export async function renderClassesPage(contentEl) {
     const yearName = (c) => (c.AcademicYear ? c.AcademicYear.year_name : lookupYear(c.academic_year_id));
     const semesterName = (c) => (c.Semester ? c.Semester.semester_name : lookupSemester(c.semester_id));
     const homeroom = (c) => (c.HomeroomTeacher ? teacherName(c.HomeroomTeacher) : lookupTeacher(c.homeroom_teacher_id));
+    // Room badges read "Rm 104"; don't double the prefix if it's already stored.
+    const roomLabel = (c) => {
+      if (!c.room_number) return '';
+      return /^rm\b/i.test(String(c.room_number)) ? c.room_number : `Rm ${c.room_number}`;
+    };
 
-    const rows = classes.map((c) => `
-      <tr>
-        <td>${c.class_name}</td>
-        <td>${yearName(c)}</td>
-        <td>${semesterName(c)}</td>
-        <td>${c.room_number || '—'}</td>
-        <td>${c.max_capacity != null ? c.max_capacity : '—'}</td>
-        <td>${homeroom(c)}</td>
-        <td>
-          <div class="table-actions">
+    const cards = classes.map((c) => {
+      const room = roomLabel(c);
+      const cap = c.max_capacity != null ? Number(c.max_capacity) : null;
+      const enrolled = Number(c.enrolled_count || 0);
+      let capBlock = '';
+      if (cap != null && cap > 0) {
+        const pct = Math.min(100, Math.round((enrolled / cap) * 100));
+        const fillClass = pct >= 100 ? 'is-full' : pct >= 90 ? 'is-high' : '';
+        capBlock = `
+          <div class="cc-cap-top">
+            <span class="cc-cap-label">Capacity</span>
+            <span class="cc-cap-value">${enrolled}/${cap}</span>
+          </div>
+          <div class="cc-bar"><div class="cc-bar-fill ${fillClass}" style="width:${pct}%"></div></div>`;
+      } else {
+        capBlock = `
+          <div class="cc-cap-top">
+            <span class="cc-cap-label">Enrolled</span>
+            <span class="cc-cap-value">${enrolled}</span>
+          </div>`;
+      }
+
+      return `
+        <div class="class-card" data-id="${c.class_id}">
+          <div class="cc-actions">
             <button class="btn btn-icon" data-action="assign" data-id="${c.class_id}" type="button" title="Assign Students">${icon('personAdd')}</button>
             <button class="btn btn-icon" data-action="edit" data-id="${c.class_id}" type="button" title="Edit">${icon('edit')}</button>
             <button class="btn btn-icon btn-danger" data-action="delete" data-id="${c.class_id}" type="button" title="Delete">${icon('trash')}</button>
           </div>
-        </td>
-      </tr>
-    `).join('');
+          <div class="cc-head">
+            <div class="cc-title">${c.class_name}</div>
+            ${room ? `<span class="cc-room">${room}</span>` : ''}
+          </div>
+          <div class="cc-meta">${yearName(c)} · ${semesterName(c)}</div>
+          <div class="cc-homeroom">
+            ${icon('admin')}
+            <span class="hr-label">Homeroom</span>
+            <span class="hr-name">${homeroom(c)}</span>
+          </div>
+          ${capBlock}
+        </div>`;
+    }).join('');
 
-    tableEl.innerHTML = `
-      <table>
-        <thead>
-          <tr><th>Class</th><th>Academic Year</th><th>Semester</th><th>Room</th><th>Capacity</th><th>Homeroom Teacher</th><th></th></tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    `;
+    tableEl.innerHTML = `<div class="class-grid">${cards}</div>`;
 
     tableEl.querySelectorAll('[data-action="assign"]').forEach((btn) => {
       btn.addEventListener('click', () => {

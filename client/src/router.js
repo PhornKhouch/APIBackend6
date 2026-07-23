@@ -4,7 +4,9 @@ import { renderSetupPage } from './pages/setupPage.js';
 import { renderStudentsPage } from './pages/studentsPage.js';
 import { renderTeachersPage } from './pages/teachersPage.js';
 import { renderSubjectsPage } from './pages/subjectsPage.js';
-import { renderSemestersPage } from './pages/semestersPage.js';
+import { renderClassesPage } from './pages/classPage.js';
+import { renderSchedulePage } from './pages/schedulePage.js';
+import { renderBillingPage } from './pages/billingPage.js';
 import { renderGenericListPage } from './pages/genericListPage.js';
 import { LIST_PAGES } from './pages/listPagesConfig.js';
 import { setPageTitle } from './components/topbar.js';
@@ -18,7 +20,9 @@ const CUSTOM_PAGES = {
   students: renderStudentsPage,
   teachers: renderTeachersPage,
   subjects: renderSubjectsPage,
-  semesters: renderSemestersPage,
+  classes: renderClassesPage,
+  schedule: renderSchedulePage,
+  billing: renderBillingPage,
 };
 
 function getRenderer(sectionKey) {
