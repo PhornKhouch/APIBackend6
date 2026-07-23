@@ -14,9 +14,21 @@ const getAllClasses = async (req, res) => {
         const classes = await Class.findAll({
             include: CLASS_INCLUDES,
         });
+
+        // Enrolled headcount per class for the capacity bars on the cards.
+        // One grouped query instead of an N+1 across the list — merged onto
+        // each row as `enrolled_count` (0 when a class has no enrollments).
+        const counts = await ClassEnrollment.count({ group: ["class_id"] });
+        const countByClass = new Map(counts.map((c) => [String(c.class_id), c.count]));
+
+        const data = classes.map((c) => ({
+            ...c.toJSON(),
+            enrolled_count: countByClass.get(String(c.class_id)) || 0,
+        }));
+
         res.status(200).json({
             message: "Classes retrieved successfully",
-            data: classes,
+            data,
         });
     } catch (err) {
         logError(res, err, "classesController");
